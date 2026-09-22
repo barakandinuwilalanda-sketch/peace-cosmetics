@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Peace Cosmetics & Vitenge</title>
+<style>
+    :root {
+        --zambarau: #7B1FA2;
+        --dhahabu: #FFD700;
+        --nyekundu: #D32F2F;
+        --kijani: #388E3C;
+        --machungwa: #F57C00;
+        --bg: #f4f4f7;
+        --card: #ffffff;
+        --border: #e0e0e0;
+        --text-muted: #777;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: var(--bg); color: #333; }
+
+    /* ---------- LOGIN ---------- */
+    #loginScreen {
+        min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg, var(--zambarau), #4A148C);
+    }
+    .login-box {
+        background: white; padding: 40px 35px; border-radius: 12px; width: 100%; max-width: 360px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center;
+    }
+    .login-box h1 { color: var(--zambarau); font-size: 22px; margin-bottom: 5px; }
+    .login-box p { color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
+    .login-box input {
+        width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px;
+        margin-bottom: 12px; font-size: 15px; text-align: center; letter-spacing: 2px;
+    }
+    .login-box button {
+        width: 100%; padding: 12px; background: var(--zambarau); color: white; border: none;
+        border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px;
+    }
+    .login-box button:hover { opacity: 0.9; }
+    #loginError { color: var(--nyekundu); font-size: 13px; margin-top: 10px; display: block; min-height: 16px; }
+
+    /* ---------- DASHBOARD ---------- */
+    #dashboard { display: none; }
+
+    header.topbar {
+        background: var(--zambarau); color: white; padding: 14px 5%;
+        display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+        border-bottom: 4px solid var(--dhahabu); position: sticky; top: 0; z-index: 50;
+    }
+    header.topbar h1 { font-size: 18px; }
+    header.topbar .brand { display: flex; align-items: center; gap: 10px; }
+    header.topbar .brand img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--dhahabu); object-fit: cover; background: #fff; }
+    header.topbar .right { display: flex; align-items: center; gap: 15px; }
+    header.topbar a.view-site { color: var(--njano, #FBC02D); text-decoration: none; font-weight: bold; font-size: 13px; }
+    #logoutBtn {
+        background: var(--nyekundu); color: white; border: none; padding: 8px 16px;
+        border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px;
+    }
+
+    .tabs { display: flex; gap: 10px; padding: 15px 5% 0; background: var(--card); border-bottom: 1px solid var(--border); }
+    .tab-btn {
+        padding: 10px 20px; border: none; background: none; cursor: pointer; font-weight: bold;
+        color: var(--text-muted); border-bottom: 3px solid transparent; font-size: 15px; position: relative;
+    }
+    .tab-btn.active { color: var(--zambarau); border-bottom-color: var(--zambarau); }
+    .badge {
+        background: var(--nyekundu); color: white; font-size: 11px; border-radius: 10px;
+        padding: 1px 7px; margin-left: 6px;
+    }
+
+    .tab-content { display: none; padding: 25px 5%; }
+    .tab-content.active { display: block; }
+
+    /* ---------- PRODUCTS ---------- */
+    .product-form-card {
+        background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+        padding: 20px; margin-bottom: 25px; max-width: 600px;
+    }
+    .product-form-card h2 { color: var(--zambarau); font-size: 18px; margin-bottom: 15px; }
+    .form-row { margin-bottom: 12px; }
+    .form-row label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 5px; }
+    .form-row input, .form-row select, .form-row textarea {
+        width: 100%; padding: 9px; border: 1px solid var(--border); border-radius: 5px; font-size: 14px;
+    }
+    .form-row-inline { display: flex; gap: 10px; }
+    .form-row-inline > div { flex: 1; }
+    .form-actions { display: flex; gap: 10px; margin-top: 15px; }
+    .btn { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
+    .btn-save { background: var(--kijani); color: white; }
+    .btn-cancel { background: #ccc; color: #333; }
+    .btn:hover { opacity: 0.9; }
+
+    .product-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+    .product-item {
+        background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px;
+        border-top: 4px solid var(--waridi, #E91E63);
+    }
+    .product-item img { width: 100%; height: 130px; object-fit: cover; border-radius: 5px; margin-bottom: 8px; background: #eee; }
+    .product-item h4 { font-size: 15px; margin-bottom: 3px; }
+    .product-item .cat { font-size: 11px; color: var(--zambarau); font-weight: bold; }
+    .product-item .price { color: var(--nyekundu); font-weight: bold; margin: 6px 0; }
+    .product-item .actions { display: flex; gap: 8px; margin-top: 8px; }
+    .product-item .actions button { flex: 1; padding: 6px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+    .btn-edit { background: var(--machungwa); color: white; }
+    .btn-delete { background: var(--nyekundu); color: white; }
+
+    /* ---------- ORDERS ---------- */
+    .order-card {
+        background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+        padding: 16px; margin-bottom: 14px; border-left: 5px solid var(--zambarau);
+    }
+    .order-card .order-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .order-card .order-top strong { font-size: 16px; }
+    .order-card .order-date { font-size: 12px; color: var(--text-muted); }
+    .order-items { font-size: 13px; margin: 8px 0; padding-left: 18px; }
+    .order-total { font-weight: bold; color: var(--nyekundu); }
+    .order-message { font-size: 13px; color: #555; background: #fafafa; padding: 8px; border-radius: 5px; margin: 8px 0; }
+    .order-actions { display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+    .status-select { padding: 6px 10px; border-radius: 5px; border: 1px solid var(--border); font-weight: bold; }
+    .status-Mpya { color: var(--machungwa); }
+    .status-Inashughulikiwa { color: #1976D2; }
+    .status-Imekamilika { color: var(--kijani); }
+    .status-Imeghairiwa { color: var(--nyekundu); }
+
+    .empty-msg { text-align: center; color: var(--text-muted); padding: 30px; }
+    .loading-msg { text-align: center; color: var(--text-muted); padding: 30px; }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="loginScreen">
+    <div class="login-box">
+        <h1>Peace Cosmetics Admin</h1>
+        <p>Ingiza passcode kuendelea</p>
+        <form id="loginForm">
+            <input type="password" id="passcodeInput" placeholder="Passcode" autofocus>
+            <button type="submit">Ingia</button>
+        </form>
+        <small id="loginError"></small>
+    </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div id="dashboard">
+    <header class="topbar">
+        <div class="brand">
+            <img src="P.jpeg" alt="Logo">
+            <h1>Peace Cosmetics & Vitenge — Admin</h1>
+        </div>
+        <div class="right">
+            <a class="view-site" href="/" target="_blank">Tazama Site &rarr;</a>
+            <button id="logoutBtn" onclick="logout()">Toka</button>
+        </div>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="products" onclick="switchTab('products', this)">Bidhaa</button>
+        <button class="tab-btn" data-tab="orders" onclick="switchTab('orders', this)">Oda za Wateja <span class="badge" id="newOrdersBadge" style="display:none;">0</span></button>
+    </div>
+
+    <!-- ---------- BIDHAA TAB ---------- -->
+    <div class="tab-content active" id="tab-products">
+        <div class="product-form-card">
+            <h2 id="productFormTitle">Ongeza Bidhaa Mpya</h2>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="form-row">
+                    <label>Jina la Bidhaa</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-row-inline">
+                    <div class="form-row">
+                        <label>Aina (Category)</label>
+                        <select id="category" onchange="toggleCustomCategory()">
+                            <option value="Vitenge">Vitenge</option>
+                            <option value="Vipodozi">Vipodozi</option>
+                            <option value="Pafumu">Pafumu</option>
+                            <option value="__custom__">Nyingine (Andika Mwenyewe)</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Bei (TSH)</label>
+                        <input type="number" id="price" min="0" required>
+                    </div>
+                </div>
+                <div class="form-row" id="customCategoryRow" style="display:none;">
+                    <label>Andika Aina Mpya</label>
+                    <input type="text" id="customCategory" placeholder="mfano: Viatu">
+                </div>
+                <div class="form-row">
+                    <label>Picha (Chagua Faili AU Weka Link)</label>
+                    <input type="file" id="imageFile" accept="image/*">
+                    <input type="text" id="image" placeholder="https://... (kama huna faili)" style="margin-top:8px;">
+                </div>
+                <div class="form-row">
+                    <label>Maelezo Mafupi</label>
+                    <textarea id="description" rows="2"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-save" id="productSaveBtn">Ongeza Bidhaa</button>
+                    <button type="button" class="btn btn-cancel" id="productCancelBtn" style="display:none;" onclick="resetProductForm()">Ghairi Uhariri</button>
+                </div>
+                <small id="productFormMsg" style="display:block; margin-top:8px; font-weight:bold;"></small>
+            </form>
+        </div>
+
+        <h2 style="color:var(--zambarau); margin-bottom:15px;">Bidhaa Zilizopo</h2>
+        <div class="product-list" id="productList">
+            <p class="loading-msg">Inapakia bidhaa...</p>
+        </div>
+    </div>
+
+    <!-- ---------- ODA TAB ---------- -->
+    <div class="tab-content" id="tab-orders">
+        <h2 style="color:var(--zambarau); margin-bottom:15px;">Oda za Wateja</h2>
+        <div id="ordersList">
+            <p class="loading-msg">Inapakia oda...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    let adminKey = sessionStorage.getItem('adminKey') || '';
+    let allProducts = [];
+    let editingProductId = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (adminKey) {
+            showDashboard();
+        }
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        document.getElementById('productForm').addEventListener('submit', handleProductSubmit);
+    });
+
+    // ================= LOGIN =================
+    async function handleLogin(e) {
+        e.preventDefault();
+        const passcode = document.getElementById('passcodeInput').value;
+        const errEl = document.getElementById('loginError');
+        errEl.textContent = '';
+
+        try {
+            const res = await fetch('/api/admin/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ passcode })
+            });
+            const data = await res.json();
+            if (data.success) {
+                adminKey = passcode;
+                sessionStorage.setItem('adminKey', adminKey);
+                showDashboard();
+            } else {
+                errEl.textContent = data.message || 'Passcode si sahihi.';
+            }
+        } catch (err) {
+            errEl.textContent = 'Imeshindikana kuunganisha na server.';
+        }
+    }
+
+    function logout() {
+        sessionStorage.removeItem('adminKey');
+        adminKey = '';
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('passcodeInput').value = '';
+    }
+
+    function showDashboard() {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        loadProducts();
+        loadOrders();
+    }
+
+    // Kama passcode imebadilika/session imeisha, request yoyote ya admin itarudisha 401
+    async function adminFetch(url, options = {}) {
+        options.headers = { ...(options.headers || {}), 'x-admin-key': adminKey };
+        const res = await fetch(url, options);
+        if (res.status === 401) {
+            alert('Session ya Admin imeisha au passcode imebadilika. Tafadhali ingia tena.');
+            logout();
+            throw new Error('Unauthorized');
+        }
+        return res;
+    }
+
+    // ================= TABS =================
+    function switchTab(tab, btnEl) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btnEl.classList.add('active');
+        document.getElementById('tab-' + tab).classList.add('active');
+    }
+
+    function escapeHTML(str) {
+        const div = document.createElement('div');
+        div.textContent = str || '';
+        return div.innerHTML;
+    }
+
+    // ================= PRODUCTS =================
+    function toggleCustomCategory() {
+        const select = document.getElementById('category');
+        document.getElementById('customCategoryRow').style.display = select.value === '__custom__' ? 'block' : 'none';
+    }
+
+    async function loadProducts() {
+        try {
+            const res = await fetch('/api/products');
+            allProducts = await res.json();
+            renderProductList();
+        } catch (err) {
+            document.getElementById('productList').innerHTML = '<p class="empty-msg">Imeshindikana kupakia bidhaa.</p>';
+        }
+    }
+
+    function renderProductList() {
+        const list = document.getElementById('productList');
+        if (allProducts.length === 0) {
+            list.innerHTML = '<p class="empty-msg">Hakuna bidhaa bado. Ongeza bidhaa ya kwanza hapo juu.</p>';
+            return;
+        }
+        list.innerHTML = allProducts.map(p => `
+            <div class="product-item">
+                <img src="${p.image || ''}" onerror="this.onerror=null;this.src='https://via.placeholder.com/230x130?text=Hakuna+Picha';">
+                <span class="cat">${escapeHTML(p.category)}</span>
+                <h4>${escapeHTML(p.name)}</h4>
+                <p class="price">TSH ${Number(p.price).toLocaleString()}</p>
+                <div class="actions">
+                    <button class="btn-edit" onclick="editProduct(${p.id})">Hariri</button>
+                    <button class="btn-delete" onclick="deleteProduct(${p.id})">Futa</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function editProduct(id) {
+        const p = allProducts.find(x => x.id === id);
+        if (!p) return;
+        editingProductId = id;
+
+        document.getElementById('productId').value = p.id;
+        document.getElementById('name').value = p.name;
+        document.getElementById('price').value = p.price;
+        document.getElementById('description').value = p.description || '';
+        document.getElementById('image').value = p.image || '';
+        document.getElementById('imageFile').value = '';
+
+        const categorySelect = document.getElementById('category');
+        const standardCats = ['Vitenge', 'Vipodozi', 'Pafumu'];
+        if (standardCats.includes(p.category)) {
+            categorySelect.value = p.category;
+            document.getElementById('customCategoryRow').style.display = 'none';
+        } else {
+            categorySelect.value = '__custom__';
+            document.getElementById('customCategory').value = p.category;
+            document.getElementById('customCategoryRow').style.display = 'block';
+        }
+
+        document.getElementById('productFormTitle').textContent = 'Hariri Bidhaa: ' + p.name;
+        document.getElementById('productSaveBtn').textContent = 'Hifadhi Mabadiliko';
+        document.getElementById('productCancelBtn').style.display = 'inline-block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetProductForm() {
+        editingProductId = null;
+        document.getElementById('productForm').reset();
+        document.getElementById('productId').value = '';
+        document.getElementById('customCategoryRow').style.display = 'none';
+        document.getElementById('productFormTitle').textContent = 'Ongeza Bidhaa Mpya';
+        document.getElementById('productSaveBtn').textContent = 'Ongeza Bidhaa';
+        document.getElementById('productCancelBtn').style.display = 'none';
+        document.getElementById('productFormMsg').textContent = '';
+    }
+
+    async function handleProductSubmit(e) {
+        e.preventDefault();
+        const msgEl = document.getElementById('productFormMsg');
+        msgEl.style.color = 'var(--kijani)';
+        msgEl.textContent = 'Inahifadhi...';
+
+        const categorySelect = document.getElementById('category').value;
+        const finalCategory = categorySelect === '__custom__'
+            ? document.getElementById('customCategory').value.trim()
+            : categorySelect;
+
+        if (!finalCategory) {
+            msgEl.style.color = 'var(--nyekundu)';
+            msgEl.textContent = 'Tafadhali jaza aina ya bidhaa.';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('name', document.getElementById('name').value.trim());
+        formData.append('category', finalCategory);
+        formData.append('price', document.getElementById('price').value);
+        formData.append('description', document.getElementById('description').value.trim());
+        formData.append('image', document.getElementById('image').value.trim());
+
+        const fileInput = document.getElementById('imageFile');
+        if (fileInput.files[0]) {
+            formData.append('imageFile', fileInput.files[0]);
+        }
+
+        const url = editingProductId ? `/api/products/${editingProductId}` : '/api/products';
+        const method = editingProductId ? 'PUT' : 'POST';
+
+        try {
+            const res = await adminFetch(url, { method, body: formData });
+            const data = await res.json();
+            if (data.success) {
+                msgEl.style.color = 'var(--kijani)';
+                msgEl.textContent = editingProductId ? 'Bidhaa imehaririwa!' : 'Bidhaa imeongezwa!';
+                resetProductForm();
+                loadProducts();
+            } else {
+                msgEl.style.color = 'var(--nyekundu)';
+                msgEl.textContent = data.message || 'Imeshindikana kuhifadhi.';
+            }
+        } catch (err) {
+            if (err.message !== 'Unauthorized') {
+                msgEl.style.color = 'var(--nyekundu)';
+                msgEl.textContent = 'Hitilafu ya kuunganisha na server.';
+            }
+        }
+    }
+
+    async function deleteProduct(id) {
+        if (!confirm('Una uhakika unataka kufuta bidhaa hii?')) return;
+        try {
+            await adminFetch(`/api/products/${id}`, { method: 'DELETE' });
+            loadProducts();
+        } catch (err) { /* adminFetch tayari inashughulikia 401 */ }
+    }
+
+    // ================= ORDERS =================
+    async function loadOrders() {
+        try {
+            const res = await adminFetch('/api/orders');
+            const orders = await res.json();
+            renderOrders(orders);
+            const newCount = orders.filter(o => o.status === 'Mpya').length;
+            const badge = document.getElementById('newOrdersBadge');
+            if (newCount > 0) {
+                badge.style.display = 'inline-block';
+                badge.textContent = newCount;
+            } else {
+                badge.style.display = 'none';
+            }
+        } catch (err) {
+            if (err.message !== 'Unauthorized') {
+                document.getElementById('ordersList').innerHTML = '<p class="empty-msg">Imeshindikana kupakia oda.</p>';
+            }
+        }
+    }
+
+    function renderOrders(orders) {
+        const container = document.getElementById('ordersList');
+        if (orders.length === 0) {
+            container.innerHTML = '<p class="empty-msg">Hakuna oda bado.</p>';
+            return;
+        }
+
+        container.innerHTML = orders.map(o => {
+            const date = new Date(o.created_at).toLocaleString('sw-TZ');
+            const itemsHtml = o.items.map(it => `<li>${escapeHTML(it.name)} x${it.quantity} — TSH ${Number(it.price * it.quantity).toLocaleString()}</li>`).join('');
+            return `
+                <div class="order-card">
+                    <div class="order-top">
+                        <strong>#${o.id} — ${escapeHTML(o.customer_name)}</strong>
+                        <span class="order-date">${date}</span>
+                    </div>
+                    <p><strong>Mawasiliano:</strong> ${escapeHTML(o.contact)}</p>
+                    <ul class="order-items">${itemsHtml}</ul>
+                    <p class="order-total">Jumla: TSH ${Number(o.total).toLocaleString()}</p>
+                    ${o.message ? `<div class="order-message">${escapeHTML(o.message)}</div>` : ''}
+                    <div class="order-actions">
+                        <label><strong>Status:</strong></label>
+                        <select class="status-select status-${o.status}" onchange="updateOrderStatus(${o.id}, this.value, this)">
+                            ${['Mpya', 'Inashughulikiwa', 'Imekamilika', 'Imeghairiwa'].map(s =>
+                                `<option value="${s}" ${s === o.status ? 'selected' : ''}>${s}</option>`
+                            ).join('')}
+                        </select>
+                        <button class="btn-delete" style="padding:6px 14px;border-radius:5px;" onclick="deleteOrder(${o.id})">Futa Oda</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function updateOrderStatus(id, status, selectEl) {
+        try {
+            await adminFetch(`/api/orders/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+            selectEl.className = 'status-select status-' + status;
+            loadOrders();
+        } catch (err) { /* adminFetch tayari inashughulikia 401 */ }
+    }
+
+    async function deleteOrder(id) {
+        if (!confirm('Una uhakika unataka kufuta oda hii?')) return;
+        try {
+            await adminFetch(`/api/orders/${id}`, { method: 'DELETE' });
+            loadOrders();
+        } catch (err) { /* adminFetch tayari inashughulikia 401 */ }
+    }
+
+    // Auto-refresh oda kila sekunde 30 ili oda mpya ionekane bila reload
+    setInterval(() => { if (adminKey) loadOrders(); }, 30000);
+</script>
+</body>
+</html>
