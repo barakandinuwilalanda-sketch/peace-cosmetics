@@ -4,7 +4,7 @@
   "description": "Peace Cosmetics & Vitenge - Full Website (Duka + Admin CMS)",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "npm rebuild better-sqlite3 && node server.js"
   },
   "dependencies": {
     "better-sqlite3": "^11.3.0",
